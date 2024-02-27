@@ -1,23 +1,11 @@
-import { StyleSheet } from 'react-native';
-
 import { Text, View } from 'tamagui';
 
-export default function TabOneScreen() {
+export default function TabTwoScreen() {
   return (
-    <View style={styles.container} backgroundColor="$backgroundStrong">
-      <Text style={styles.title}>Tab Two</Text>
+    <View flex={1} ai="center" jc="center" bg="$backgroundStrong">
+      <Text fontSize={20} fontWeight="700">
+        Tab Two
+      </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-});
