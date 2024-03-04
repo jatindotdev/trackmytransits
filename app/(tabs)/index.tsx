@@ -10,6 +10,10 @@ export default function TabOneScreen() {
       <Link href="/modal" asChild>
         <Button>Go to Modal</Button>
       </Link>
+
+      <Link href="/login" asChild>
+        <Button>Go to login</Button>
+      </Link>
     </View>
   );
 }

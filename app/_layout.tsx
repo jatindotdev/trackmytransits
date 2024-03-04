@@ -1,7 +1,7 @@
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, useNavigation, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import config from '@/tamagui.config';
@@ -52,6 +52,15 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
+  const [isLoggedIn] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.navigate('(auth)/login');
+    }
+  });
+
   return (
     <TamaguiProvider config={config} defaultTheme={colorScheme as string}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -59,6 +68,12 @@ function RootLayoutNav() {
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            <Stack.Screen
+              name="(auth)/login"
+              options={{
+                headerShown: false,
+              }}
+            />
           </Stack>
         </Theme>
       </ThemeProvider>
