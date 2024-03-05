@@ -1,11 +1,52 @@
+import { Link } from 'expo-router';
+import React from 'react';
+import { Pressable } from 'react-native';
 import { Text, View } from 'tamagui';
 
-export default function TabTwoScreen() {
+const IncomingTansits = () => {
   return (
-    <View flex={1} ai="center" jc="center" bg="$backgroundStrong">
-      <Text fontSize={20} fontWeight="700">
-        Tab Two
-      </Text>
+    <View w={'100%'} p={'$4'}>
+      <Link href="/(reached)/inventory-checks">
+        <View
+          w={'100%'}
+          p={'$4'}
+          height={'auto'}
+          justifyContent="space-between"
+          backgroundColor={'$orange7'}
+          borderRadius={10}
+        >
+          <View
+            flexDirection="row"
+            width={'100%'}
+            justifyContent="space-between"
+          >
+            <Text fontSize={17} fontWeight={'700'} paddingBottom={7}>
+              {' '}
+              Company Name
+            </Text>
+            <Text fontSize={13} fontWeight={'500'}>
+              {' '}
+              Tracking ID
+            </Text>
+          </View>
+          <View
+            flexDirection="row"
+            width={'100%'}
+            justifyContent="space-between"
+          >
+            <Text fontSize={13} fontWeight={'500'} paddingBottom={7}>
+              {' '}
+              Reach Date
+            </Text>
+            <Text fontSize={13} fontWeight={'500'}>
+              {' '}
+              Destination{' '}
+            </Text>
+          </View>
+        </View>
+      </Link>
     </View>
   );
-}
+};
+
+export default IncomingTansits;

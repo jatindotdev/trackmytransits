@@ -18,7 +18,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
+          title: 'Incoming Transits',
           tabBarIcon: ({ color }) => <Code2 color={color} size={28} />,
           headerRight: () => (
             <Link href="/modal" asChild>
@@ -40,7 +40,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="two"
         options={{
-          title: 'Tab Two',
+          title: 'Add to inventory',
           tabBarIcon: ({ color }) => <Code2 color={color} size={28} />,
         }}
       />

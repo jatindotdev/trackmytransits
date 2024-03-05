@@ -71,7 +71,19 @@ function RootLayoutNav() {
             <Stack.Screen
               name="(auth)/login"
               options={{
-                headerShown: false,
+                headerShown: true,
+              }}
+            />
+            <Stack.Screen
+              name="(incoming)/incoming"
+              options={{
+                headerShown: true,
+              }}
+            />
+            <Stack.Screen
+              name="(inventory)/inventory-checks"
+              options={{
+                headerShown: true,
               }}
             />
           </Stack>
