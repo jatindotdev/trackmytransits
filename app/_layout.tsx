@@ -1,94 +1,79 @@
-import { useFonts } from 'expo-font';
-import { Stack, useNavigation, useRouter } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
-
-import { useColorScheme } from '@/components/useColorScheme';
+import { SessionProvider } from '@/lib/ctx';
 import config from '@/tamagui.config';
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
-import { TamaguiProvider, Theme } from 'tamagui';
+import { Slot } from 'expo-router';
+import { useColorScheme } from 'react-native';
+import { TamaguiProvider, Theme, useTheme } from 'tamagui';
+import Toast, {
+  BaseToast,
+  ErrorToast,
+  InfoToast,
+} from 'react-native-toast-message';
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
-    InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
-  });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
-  return <RootLayoutNav />;
+export default function Root() {
+  const colorScheme = useColorScheme();
+  return (
+    <SessionProvider>
+      <TamaguiProvider config={config} defaultTheme={colorScheme as string}>
+        <ThemeProvider
+          value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+        >
+          <Theme name={colorScheme}>
+            <Slot />
+            <ToastProvider />
+          </Theme>
+        </ThemeProvider>
+      </TamaguiProvider>
+    </SessionProvider>
+  );
 }
 
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
-  const [isLoggedIn] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      router.navigate('(auth)/login');
-    }
-  });
+export function ToastProvider() {
+  const theme = useTheme();
 
   return (
-    <TamaguiProvider config={config} defaultTheme={colorScheme as string}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Theme name={colorScheme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-            <Stack.Screen
-              name="(auth)/login"
-              options={{
-                headerShown: true,
-              }}
-            />
-            <Stack.Screen
-              name="(incoming)/incoming"
-              options={{
-                headerShown: true,
-              }}
-            />
-            <Stack.Screen
-              name="(inventory)/inventory-checks"
-              options={{
-                headerShown: true,
-              }}
-            />
-          </Stack>
-        </Theme>
-      </ThemeProvider>
-    </TamaguiProvider>
+    <Toast
+      topOffset={80}
+      bottomOffset={100}
+      config={{
+        success: props => (
+          <BaseToast
+            {...props}
+            text1Style={{ color: theme.color.val }}
+            text2Style={{ color: theme.color10.val }}
+            style={{
+              borderLeftColor: 'green',
+              backgroundColor: theme.background.val,
+            }}
+          />
+        ),
+        error: props => (
+          <ErrorToast
+            {...props}
+            text1Style={{ color: theme.color.val }}
+            text2Style={{ color: theme.color10.val }}
+            style={{
+              borderLeftColor: 'red',
+              backgroundColor: theme.background.val,
+            }}
+          />
+        ),
+        info: props => (
+          <InfoToast
+            {...props}
+            text1Style={{ color: theme.color.get() }}
+            text2Style={{ color: theme.color10.get() }}
+            style={{
+              borderLeftColor: 'yellow',
+              backgroundColor: theme.background.get(),
+            }}
+          />
+        ),
+      }}
+    />
   );
 }
