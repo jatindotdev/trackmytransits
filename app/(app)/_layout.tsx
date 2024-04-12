@@ -20,71 +20,48 @@ export {
   ErrorBoundary,
 } from 'expo-router';
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '/(app)/(tabs)',
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
-    InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
-  });
-
-  const { isLoading, session } = useSession();
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+  const { isLoading, user } = useSession();
 
   useEffect(() => {
-    if (loaded && !isLoading) {
+    if (!isLoading) {
       SplashScreen.hideAsync();
     }
-  }, [loaded, isLoading]);
+  }, [isLoading]);
 
-  if (!loaded || isLoading) {
+  if (isLoading) {
     return null;
   }
 
-  if (!session) {
+  if (!user) {
     return <Redirect href="/login" />;
   }
 
-  return <RootLayoutNav />;
+  return <RootLayoutNav role={user.role} />;
 }
 
-function RootLayoutNav() {
-  const theme = useTheme();
-
+function RootLayoutNav({
+  role,
+}: {
+  role: string;
+}) {
   return (
     <GestureHandlerRootView>
       <BottomSheetModalProvider>
         <View w="100%" h="100%">
           <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(admin)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="(receptionist)"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="(worker)" options={{ headerShown: false }} />
             <Stack.Screen
               name="settings"
               options={{
                 headerShown: true,
                 headerTitle: 'Settings',
                 headerBackTitle: 'Home',
-              }}
-            />
-            <Stack.Screen
-              name="(incoming)/incoming"
-              options={{
-                headerShown: true,
-              }}
-            />
-            <Stack.Screen
-              name="(reached)/inventory-checks"
-              options={{
-                headerShown: true,
               }}
             />
           </Stack>

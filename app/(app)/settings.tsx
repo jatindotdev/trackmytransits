@@ -1,3 +1,4 @@
+import { useSession } from '@/lib/ctx';
 import { supabase } from '@/lib/supabase';
 import { Stack, useNavigation } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';

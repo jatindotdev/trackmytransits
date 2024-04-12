@@ -9,7 +9,7 @@ export default function NotFoundScreen() {
         <Text fontSize="$6" fontWeight="700">
           This screen doesn't exist.
         </Text>
-        <Link href="/" asChild>
+        <Link href="/(app)/" asChild>
           <Text fontSize="$4" color="#2e78b7" mt={'$4'}>
             Go to home screen!
           </Text>

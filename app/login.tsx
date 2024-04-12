@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { supabase } from '@/lib/supabase';
 import Toast from 'react-native-toast-message';
 import { router } from 'expo-router';
+import { useFormState } from '@/hooks/useFormState';
 
 const loginSchema = z.object({
   email: z
@@ -41,13 +42,20 @@ export default function LoginScreen() {
     },
   });
 
+  const { formState, setFormState } = useFormState();
+
   const error = Object.values(errors)[0];
 
   const onSubmit = handleSubmit(async ({ email, password }) => {
+
+    setFormState('loading');
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+
+    setFormState(error ? 'error' : 'idle');
 
     if (error) {
       Toast.show({
@@ -58,7 +66,7 @@ export default function LoginScreen() {
       return;
     }
 
-    router.replace('/(app)/(tabs)');
+    router.replace('/(app)/');
 
     Toast.show({
       type: 'success',
@@ -111,8 +119,14 @@ export default function LoginScreen() {
         name="password"
       />
       {error && <Text color="$red9">{error.message}</Text>}
-      <Button w="100%" bg="$orange9" onPress={onSubmit}>
-        Continue
+      <Button w="100%" bg="$purple10" onPress={onSubmit}>
+        {
+          {
+            idle: 'Login',
+            loading: 'Logging in...',
+            error: 'Try again',
+          }[formState]
+        }
       </Button>
     </ScrollView>
   );

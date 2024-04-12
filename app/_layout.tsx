@@ -13,9 +13,35 @@ import Toast, {
   ErrorToast,
   InfoToast,
 } from 'react-native-toast-message';
+import { useFonts } from 'expo-font';
+import { useEffect } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync();
 
 export default function Root() {
+  const [loaded, error] = useFonts({
+    Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
+    InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
+  });
+
   const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) {
+    return null;
+  }
+
   return (
     <SessionProvider>
       <TamaguiProvider config={config} defaultTheme={colorScheme as string}>
@@ -37,6 +63,7 @@ export function ToastProvider() {
 
   return (
     <Toast
+      position="bottom"
       topOffset={80}
       bottomOffset={100}
       config={{
