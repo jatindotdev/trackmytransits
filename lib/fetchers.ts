@@ -31,3 +31,20 @@ export const fetchInventory = async () => {
   return data;
 };
 
+
+
+export const fetchUsers = async () => {
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .filter('role', 'neq', 'admin')
+    .order('name', { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  console.log(data);
+
+  return data;
+};
