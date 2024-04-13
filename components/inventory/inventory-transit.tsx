@@ -101,7 +101,7 @@ export function InventoryTransit({ transit }: TransitCardProps) {
         }}
         style={{ height: '100%' }}
       >
-        <View jc="space-between" ai="center" p="$4" gap="$4" w="100%">
+        <View jc="space-between" ai="center" gap="$4" w="100%">
           <View gap="$2" bg="$color6" p="$4" borderRadius="$4">
             <View fd="row" w="100%" justifyContent="space-between">
               <Text color="$color11">
@@ -252,86 +252,93 @@ export function InventoryTransit({ transit }: TransitCardProps) {
             Update Tally
           </Button>
           <BottomSheet {...sheetProps}>
-            <BottomSheetTitle centerTitle>Update Tally</BottomSheetTitle>
-            <BottomSheetScrollView
-              contentContainerStyle={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: 20,
-                gap: 20,
-                width: '100%',
-              }}
-              style={{ height: '100%' }}
-            >
-              <Controller
-                control={control}
-                name="onTheRecord"
-                render={({ field }) => (
-                  <Button
-                    onPress={() => field.onChange(!field.value)}
-                    bg={field.value ? '$green10' : '$color6'}
-                    color={field.value ? 'white' : '$color'}
-                    w="100%"
-                    fontSize="$5"
-                  >
-                    On the record
-                  </Button>
+            <View w="100%" h="100%">
+              <BottomSheetTitle centerTitle>Update Tally</BottomSheetTitle>
+              <BottomSheetScrollView
+                contentContainerStyle={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: 20,
+                  gap: 20,
+                  width: '100%',
+                }}
+                style={{ height: '100%' }}
+              >
+                <Controller
+                  control={control}
+                  name="onTheRecord"
+                  render={({ field }) => (
+                    <Button
+                      onPress={() => field.onChange(!field.value)}
+                      bg={field.value ? '$green10' : '$color6'}
+                      color={field.value ? 'white' : '$color'}
+                      w="100%"
+                      fontSize="$5"
+                    >
+                      On the record
+                    </Button>
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="asPerBill"
+                  render={({ field }) => (
+                    <Button
+                      onPress={() => field.onChange(!field.value)}
+                      bg={field.value ? '$green10' : '$color6'}
+                      color={field.value ? 'white' : '$color'}
+                      w="100%"
+                      fontSize="$5"
+                    >
+                      As per bill
+                    </Button>
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="scanForEveryBill"
+                  render={({ field }) => (
+                    <Button
+                      onPress={() => field.onChange(!field.value)}
+                      bg={field.value ? '$green10' : '$color6'}
+                      color={field.value ? 'white' : '$color'}
+                      w="100%"
+                      fontSize="$5"
+                    >
+                      Scan for every bill
+                    </Button>
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="tallyEntryToGoods"
+                  render={({ field }) => (
+                    <Button
+                      onPress={() => field.onChange(!field.value)}
+                      bg={field.value ? '$green10' : '$color6'}
+                      color={field.value ? 'white' : '$color'}
+                      w="100%"
+                      fontSize="$5"
+                    >
+                      Tally entry to goods
+                    </Button>
+                  )}
+                />
+                {error && (
+                  <Text color="$red10" textAlign="center">
+                    {error.message}
+                  </Text>
                 )}
-              />
-              <Controller
-                control={control}
-                name="asPerBill"
-                render={({ field }) => (
-                  <Button
-                    onPress={() => field.onChange(!field.value)}
-                    bg={field.value ? '$green10' : '$color6'}
-                    color={field.value ? 'white' : '$color'}
-                    w="100%"
-                    fontSize="$5"
-                  >
-                    As per bill
-                  </Button>
-                )}
-              />
-              <Controller
-                control={control}
-                name="scanForEveryBill"
-                render={({ field }) => (
-                  <Button
-                    onPress={() => field.onChange(!field.value)}
-                    bg={field.value ? '$green10' : '$color6'}
-                    color={field.value ? 'white' : '$color'}
-                    w="100%"
-                    fontSize="$5"
-                  >
-                    Scan for every bill
-                  </Button>
-                )}
-              />
-              <Controller
-                control={control}
-                name="tallyEntryToGoods"
-                render={({ field }) => (
-                  <Button
-                    onPress={() => field.onChange(!field.value)}
-                    bg={field.value ? '$green10' : '$color6'}
-                    color={field.value ? 'white' : '$color'}
-                    w="100%"
-                    fontSize="$5"
-                  >
-                    Tally entry to goods
-                  </Button>
-                )}
-              />
-              {error && (
-                <Text color="$red10" textAlign="center">
-                  {error.message}
-                </Text>
-              )}
-              <Button onPress={onSubmit} bg="$purple10" w="100%" fontSize="$5">
-                Update
-              </Button>
-            </BottomSheetScrollView>
+                <Button
+                  onPress={onSubmit}
+                  bg="$purple10"
+                  w="100%"
+                  fontSize="$5"
+                >
+                  Update
+                </Button>
+              </BottomSheetScrollView>
+            </View>
           </BottomSheet>
         </View>
       </BottomSheetScrollView>
