@@ -78,7 +78,7 @@ export default function TabLayout() {
         name="inventory"
         options={{
           title: 'Inventory',
-          tabBarActiveTintColor: theme.blue10.get(),
+          tabBarActiveTintColor: theme.purple10.get(),
           tabBarIcon: ({ color }) => <Code2 color={color} size={28} />,
         }}
       />
