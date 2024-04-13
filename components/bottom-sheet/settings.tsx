@@ -25,6 +25,7 @@ import { useState } from 'react';
 import { z } from 'zod';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { SearchBar } from '../shared/search-bar';
 
 interface SettingsSheetProps {
   user: Tables<'users'>;
@@ -308,6 +309,26 @@ export const ManageUsers = () => {
     editUserSheet.dismiss();
   });
 
+  const editUserSheet = useBottomSheetModal({
+    snapPoints: ['60%', '75%', '92.5%'],
+    onDismiss: () =>
+      editReset({
+        name: '',
+        role: 'worker',
+      }),
+    onPresent: id => {
+      const user = users?.find(user => user.id === id);
+      if (!user) return;
+      editReset({
+        id: user.id,
+        name: user.name,
+        role: user.role,
+      });
+    },
+  });
+
+  const [searchTerm, setSearchTerm] = useState('');
+
   if (error) {
     return (
       <View
@@ -336,22 +357,15 @@ export const ManageUsers = () => {
     );
   }
 
-  const editUserSheet = useBottomSheetModal({
-    snapPoints: ['60%', '75%', '92.5%'],
-    onDismiss: () =>
-      editReset({
-        name: '',
-        role: 'worker',
-      }),
-    onPresent: id => {
-      const user = users.find(user => user.id === id);
-      if (!user) return;
-      editReset({
-        id: user.id,
-        name: user.name,
-        role: user.role,
-      });
-    },
+  const filteredUsers = users?.filter(user => {
+    if (!searchTerm) return true;
+
+    if (user.name.toLowerCase().includes(searchTerm.toLowerCase())) return true;
+    if (user.email.toLowerCase().includes(searchTerm.toLowerCase()))
+      return true;
+    if (user.role.toLowerCase().includes(searchTerm.toLowerCase())) return true;
+
+    return false;
   });
 
   return (
@@ -367,8 +381,18 @@ export const ManageUsers = () => {
       <BottomSheet {...manageUsersSheet}>
         <View width="100%" height="100%" pos="relative">
           <BottomSheetTitle centerTitle>Manage Users</BottomSheetTitle>
+          <SearchBar
+            placeholder="Filter Users"
+            onChange={setSearchTerm}
+            py="$1.5"
+            px="$4"
+            borderBottomColor="$gray2"
+            borderBottomWidth="$1"
+            value={searchTerm}
+            onClear={() => setSearchTerm('')}
+          />
           <FlatList
-            data={users}
+            data={filteredUsers}
             style={{ padding: 20 }}
             keyExtractor={item => item.id}
             refreshControl={
@@ -523,7 +547,7 @@ export const ManageUsers = () => {
                         )}
 
                         <Button
-                          bg="$purple9"
+                          bg="$green9"
                           w="100%"
                           fontSize="$5"
                           onPress={editUser}
