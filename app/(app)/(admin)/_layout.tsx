@@ -14,6 +14,7 @@ import { supabase } from '@/lib/supabase';
 import Toast from 'react-native-toast-message';
 import { useFormState } from '@/hooks/useFormState';
 import { useSession } from '@/lib/ctx';
+import { SettingsSheet } from '@/components/bottom-sheet/settings';
 
 export default function TabLayout() {
   const settingSheet = useBottomSheetModal({
@@ -70,44 +71,7 @@ export default function TabLayout() {
           title: 'Incoming Transits',
           tabBarActiveTintColor: theme.purple10.get(),
           tabBarIcon: ({ color }) => <Code2 color={color} size={28} />,
-          headerRight: () => {
-            return (
-              <>
-                <Pressable>
-                  {({ pressed }) => (
-                    <Settings
-                      opacity={pressed ? 0.5 : 1}
-                      size={24}
-                      style={{
-                        marginRight: 16,
-                      }}
-                      onPress={settingSheet.present}
-                    />
-                  )}
-                </Pressable>
-                <BottomSheet {...settingSheet}>
-                  <BottomSheetTitle centerTitle>Settings</BottomSheetTitle>
-                  <ScrollView p="$8" h="100%">
-                    <Text textAlign="center" fontSize="$6" mb="$2">
-                      {user.email}
-                    </Text>
-                    <Text textAlign="center" fontSize="$6" mb="$2">
-                      ({user.role})
-                    </Text>
-                    <Button mt="$4" bg="$red8" fontSize="$5" onPress={signOut}>
-                      {
-                        {
-                          idle: 'Sign Out',
-                          loading: 'Signing Out...',
-                          error: 'Sign Out',
-                        }[formState]
-                      }
-                    </Button>
-                  </ScrollView>
-                </BottomSheet>
-              </>
-            );
-          },
+          headerRight: () => <SettingsSheet user={user} />,
         }}
       />
       <Tabs.Screen

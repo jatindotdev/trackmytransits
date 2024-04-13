@@ -37,14 +37,10 @@ export default function RootLayout() {
     return <Redirect href="/login" />;
   }
 
-  return <RootLayoutNav role={user.role} />;
+  return <RootLayoutNav />;
 }
 
-function RootLayoutNav({
-  role,
-}: {
-  role: string;
-}) {
+function RootLayoutNav() {
   return (
     <GestureHandlerRootView>
       <BottomSheetModalProvider>
@@ -56,14 +52,6 @@ function RootLayoutNav({
               options={{ headerShown: false }}
             />
             <Stack.Screen name="(worker)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="settings"
-              options={{
-                headerShown: true,
-                headerTitle: 'Settings',
-                headerBackTitle: 'Home',
-              }}
-            />
           </Stack>
         </View>
       </BottomSheetModalProvider>

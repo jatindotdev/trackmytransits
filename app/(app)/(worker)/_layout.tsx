@@ -4,45 +4,11 @@ import { ActivityIndicator, Pressable } from 'react-native';
 
 import { useClientOnlyValue } from '@/hooks/useClientOnlyValue';
 import { Code2, Settings } from '@tamagui/lucide-icons';
-import {
-  BottomSheet,
-  BottomSheetTitle,
-  useBottomSheetModal,
-} from '@/components/bottom-sheet/modal';
-import { Button, ScrollView, Text, View, useTheme } from 'tamagui';
-import { supabase } from '@/lib/supabase';
-import Toast from 'react-native-toast-message';
-import { useFormState } from '@/hooks/useFormState';
+import { View, useTheme } from 'tamagui';
 import { useSession } from '@/lib/ctx';
+import { SettingsSheet } from '@/components/bottom-sheet/settings';
 
 export default function TabLayout() {
-  const settingSheet = useBottomSheetModal({
-    snapPoints: ['50%'],
-    onDismiss: () => console.log('onDismiss'),
-    onPresent: () => console.log('onPresent'),
-  });
-
-  const { formState, setFormState } = useFormState();
-
-  const signOut = async () => {
-    setFormState('loading');
-
-    const { error } = await supabase.auth.signOut();
-
-    setFormState(error ? 'error' : 'idle');
-
-    if (error) {
-      Toast.show({
-        type: 'error',
-        text1: 'Error signing out',
-        text2: error.message,
-      });
-      return;
-    }
-
-    settingSheet.dismiss();
-  };
-
   const theme = useTheme();
 
   const { user } = useSession();
@@ -70,44 +36,7 @@ export default function TabLayout() {
           title: 'Inventory',
           tabBarActiveTintColor: theme.purple10.get(),
           tabBarIcon: ({ color }) => <Code2 color={color} size={28} />,
-          headerRight: () => {
-            return (
-              <>
-                <Pressable>
-                  {({ pressed }) => (
-                    <Settings
-                      opacity={pressed ? 0.5 : 1}
-                      size={24}
-                      style={{
-                        marginRight: 16,
-                      }}
-                      onPress={settingSheet.present}
-                    />
-                  )}
-                </Pressable>
-                <BottomSheet {...settingSheet}>
-                  <BottomSheetTitle centerTitle>Settings</BottomSheetTitle>
-                  <ScrollView p="$8" h="100%" nestedScrollEnabled>
-                    <Text textAlign="center" fontSize="$6" mb="$2">
-                      {user.email}
-                    </Text>
-                    <Text textAlign="center" fontSize="$6" mb="$2">
-                      ({user.role})
-                    </Text>
-                    <Button mt="$4" bg="$red8" fontSize="$5" onPress={signOut}>
-                      {
-                        {
-                          idle: 'Sign Out',
-                          loading: 'Signing Out...',
-                          error: 'Sign Out',
-                        }[formState]
-                      }
-                    </Button>
-                  </ScrollView>
-                </BottomSheet>
-              </>
-            );
-          },
+          headerRight: () => <SettingsSheet user={user} />,
         }}
       />
     </Tabs>
