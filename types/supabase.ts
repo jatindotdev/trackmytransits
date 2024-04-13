@@ -132,9 +132,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
-          isDeleted: boolean
           name: string
-          phone: string
           role: string
           updated_at: string
         }
@@ -142,9 +140,7 @@ export type Database = {
           created_at?: string
           email?: string
           id: string
-          isDeleted?: boolean
           name?: string
-          phone?: string
           role?: string
           updated_at?: string
         }
@@ -152,15 +148,13 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
-          isDeleted?: boolean
           name?: string
-          phone?: string
           role?: string
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "public_user_id_fkey"
+            foreignKeyName: "public_users_id_fkey"
             columns: ["id"]
             isOneToOne: true
             referencedRelation: "users"
@@ -173,7 +167,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_user: {
+        Args: {
+          email: string
+          password: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
