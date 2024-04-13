@@ -76,6 +76,7 @@ export default function LoginScreen() {
 
   return (
     <ScrollView
+      nestedScrollEnabled
       contentContainerStyle={{
         flex: 1,
         alignItems: 'center',

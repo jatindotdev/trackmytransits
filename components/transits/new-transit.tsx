@@ -1,4 +1,8 @@
-import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import {
+  BottomSheetModal,
+  BottomSheetScrollView,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
 import type React from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
@@ -11,7 +15,6 @@ import {
   ScrollView,
   Dialog,
 } from 'tamagui';
-import { Form } from 'tamagui';
 import DatePicker from 'react-native-modern-datepicker';
 import { formatTime } from '@/lib/utils';
 import { z } from 'zod';
@@ -133,14 +136,17 @@ const NewTransit = (props: React.ComponentProps<typeof Button>) => {
         }}
         keyboardBehavior="interactive"
       >
-        <BottomSheetView>
+        <View w="100%" h="100%">
           <BottomSheetTitle centerTitle>New Transit</BottomSheetTitle>
-          <ScrollView
+          <BottomSheetScrollView
             contentContainerStyle={{
-              ai: 'center',
-              p: '$4',
-              gap: '$6',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: 20,
+              gap: 20,
+              width: '100%',
             }}
+            style={{ height: '100%' }}
             automaticallyAdjustKeyboardInsets
           >
             <View ai={'center'} w={'100%'} gap="$2.5">
@@ -316,8 +322,8 @@ const NewTransit = (props: React.ComponentProps<typeof Button>) => {
                 Cancel
               </Button>
             </View>
-          </ScrollView>
-        </BottomSheetView>
+          </BottomSheetScrollView>
+        </View>
       </BottomSheetModal>
     </>
   );

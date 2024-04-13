@@ -1,30 +1,26 @@
 import { View, Text, useTheme } from 'tamagui';
-import NewTransit from '@/components/transits/new-transit';
 import { useState } from 'react';
 import { TransitCard } from '@/components/transits/transit-card';
 import { ActivityIndicator, RefreshControl, SectionList } from 'react-native';
-import { TransitPage } from '@/components/transits/transit';
+import { fetchInventory } from '@/lib/fetchers';
 import useSWR from 'swr';
-import { fetchTransits } from '@/lib/fetchers';
-import {
-  BottomSheet,
-  useBottomSheetModal,
-} from '@/components/bottom-sheet/modal';
+import { BottomSheet, useBottomSheetModal } from '../bottom-sheet/modal';
+import { InventoryTransit } from './inventory-transit';
 
-export function Transits() {
+export function Inventory() {
   const {
     data: transits,
     isLoading: loading,
     error,
     mutate,
-  } = useSWR('transits', fetchTransits);
+  } = useSWR('inventory', fetchInventory);
 
-  const [selectedTransit, setSelectedTransit] = useState<number>(0);
+  const [selectedTransit, setSelectedTransit] = useState(0);
 
   const sheetProps = useBottomSheetModal({
     snapPoints: ['92.5%'],
     onDismiss: () => console.log('onDismiss'),
-    onPresent: id => setSelectedTransit(id as number),
+    onPresent: index => setSelectedTransit(index as number),
   });
 
   const theme = useTheme();
@@ -32,7 +28,7 @@ export function Transits() {
   if (error) {
     return (
       <View flex={1} ai="center" jc="center">
-        <Text>Error fetching transits.</Text>
+        <Text color="$gray9">Error fetching inventory.</Text>
       </View>
     );
   }
@@ -52,7 +48,7 @@ export function Transits() {
       <SectionList
         sections={[
           {
-            data: transits.filter(t => !t.reached_destination),
+            data: transits.filter(t => !t.received),
             key: 'pending',
             keyExtractor: item => item.id.toString(),
             renderItem: ({ item }) => (
@@ -63,7 +59,7 @@ export function Transits() {
             ),
           },
           {
-            data: transits.filter(t => t.reached_destination),
+            data: transits.filter(t => t.received),
             key: 'completed',
             keyExtractor: item => item.id.toString(),
             renderItem: ({ item }) => (
@@ -77,22 +73,22 @@ export function Transits() {
         ItemSeparatorComponent={() => <View h="$1" />}
         ListEmptyComponent={
           <View flex={1} ai="center" jc="center">
-            <Text>No Transit items.</Text>
+            <Text>No Inventory items.</Text>
           </View>
         }
         renderSectionHeader={sections => {
           if (sections.section.key === 'pending') {
             return (
               <Text py="$3.5" px="$2" fontSize="$6" fontWeight="700">
-                Pending Transits
+                Pending Inventory Items
               </Text>
             );
           }
 
           if (sections.section.key === 'completed') {
             return (
-              <Text py="$3.5" pt="$4" px="$2" fontSize="$6" fontWeight="700">
-                Completed Transits
+              <Text py="$3.5" px="$2" fontSize="$6" fontWeight="700">
+                Completed Inventory Items
               </Text>
             );
           }
@@ -105,15 +101,10 @@ export function Transits() {
         }
       />
       {transit && (
-        <BottomSheet
-          onDismiss={sheetProps.onDismiss}
-          sheetRef={sheetProps.sheetRef}
-          snapPoints={sheetProps.snapPoints}
-        >
-          <TransitPage transit={transit} />
+        <BottomSheet {...sheetProps}>
+          <InventoryTransit transit={transit} />
         </BottomSheet>
       )}
-      <NewTransit bg="$purple10" color="white" pos="absolute" b="$4" r="$4" />
     </View>
   );
 }

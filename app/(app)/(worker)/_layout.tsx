@@ -87,7 +87,7 @@ export default function TabLayout() {
                 </Pressable>
                 <BottomSheet {...settingSheet}>
                   <BottomSheetTitle centerTitle>Settings</BottomSheetTitle>
-                  <ScrollView p="$8" h="100%">
+                  <ScrollView p="$8" h="100%" nestedScrollEnabled>
                     <Text textAlign="center" fontSize="$6" mb="$2">
                       {user.email}
                     </Text>

@@ -6,15 +6,16 @@ import {
 import { supabase } from '@/lib/supabase';
 import { formatTime } from '@/lib/utils';
 import type { Tables } from '@/types/supabase';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowRight } from '@tamagui/lucide-icons';
-import { router } from 'expo-router';
+import { Link } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import Toast from 'react-native-toast-message';
 import { mutate } from 'swr';
 import { View, Text, ScrollView, Button, Input } from 'tamagui';
-import { object, z } from 'zod';
+import { z } from 'zod';
 
 export type Transit = Tables<'transit'> & {
   status: Tables<'status'>[];
@@ -29,171 +30,198 @@ export function TransitPage({ transit }: TransitProps) {
   return (
     <View w="100%" h="100%">
       <BottomSheetTitle centerTitle>{transit.company_name}</BottomSheetTitle>
-      <ScrollView w="100%" h="100%">
-        <View jc="space-between" mb="$20" ai="center" p="$4" gap="$4" w="100%">
-          <View gap="$2" bg="$color6" p="$4" borderRadius="$4">
-            <View fd="row" w="100%" justifyContent="space-between">
-              <Text color="$color11">
-                {transit.reached_destination ? 'Reached' : 'In Transit'}
-              </Text>
-              <Text color="$color">#{transit.tracking_id}</Text>
-            </View>
-            <View fd="row" w="100%" justifyContent="space-between">
-              <Text color="$color11">Billed on</Text>
-              <Text color="$color">
-                {formatTime(new Date(transit.billing_date))}
-              </Text>
-            </View>
-
-            <View fd="row" ai="flex-end" gap="$2" jc="space-between">
-              <Text textOverflow="ellipsis" w="45%" color="$color11">
-                Shipping Company
-              </Text>
-              <Text
-                textOverflow="ellipsis"
-                w="45%"
-                textAlign="right"
-                fontSize="$6"
-                color="$color"
-              >
-                {transit.shipping_company}
-              </Text>
-            </View>
+      <BottomSheetScrollView
+        contentContainerStyle={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingBottom: '52%',
+          padding: 20,
+          gap: 20,
+          width: '100%',
+        }}
+        style={{ height: '100%' }}
+      >
+        <View gap="$2" bg="$color6" p="$4" borderRadius="$4">
+          <View fd="row" w="100%" justifyContent="space-between">
+            <Text color="$color11">
+              {transit.reached_destination ? 'Reached' : 'In Transit'}
+            </Text>
+            <Text color="$color">#{transit.tracking_id}</Text>
           </View>
-          <View
-            borderRadius="$4"
-            fd="row"
-            bg="$color6"
-            jc="center"
-            ai="center"
-            w="100%"
-            py="$4"
-          >
-            <View
-              pos="relative"
-              fd="row"
-              ai="center"
-              justifyContent="space-between"
-            >
-              <Text
-                textOverflow="ellipsis"
-                w="45%"
-                textAlign="left"
-                numberOfLines={1}
-                fontSize={16}
-                color="$color"
-              >
-                {transit.origin}
-              </Text>
-              <ArrowRight
-                pos="absolute"
-                left="50%"
-                right="50%"
-                transform={[{ translateX: -10 }]}
-                size={20}
-                color="$color"
-              />
-              <Text
-                numberOfLines={1}
-                w="45%"
-                textAlign="right"
-                fontSize={16}
-                color="$color"
-              >
-                {transit.destination}
-              </Text>
-            </View>
+          <View fd="row" w="100%" justifyContent="space-between">
+            <Text color="$color11">Billed on</Text>
+            <Text color="$color">
+              {formatTime(new Date(transit.billing_date))}
+            </Text>
           </View>
 
-          <Text fontWeight="500" fontSize="$6" color="$color">
-            Container Details
-          </Text>
-          {!transit.container.length && (
-            <Text color="$color11" fontSize="$5">
-              No containers attached.
+          <View fd="row" ai="flex-end" gap="$2" jc="space-between">
+            <Text textOverflow="ellipsis" w="45%" color="$color11">
+              Shipping Company
             </Text>
-          )}
-          {transit.container.map(container => (
-            <View
-              key={container.id}
-              bg="$color6"
-              p="$4"
-              borderRadius="$4"
-              gap="$2"
-              w="100%"
+            <Text
+              textOverflow="ellipsis"
+              w="45%"
+              textAlign="right"
+              fontSize="$6"
+              color="$color"
             >
-              <View fd="row" w="100%" justifyContent="space-between">
-                <Text color="$color11">Container Id</Text>
-                <Text fontSize="$5" color="$color">
-                  #{container.id}
-                </Text>
-              </View>
-              <View fd="row" w="100%" justifyContent="space-between">
-                <Text color="$color11">Bill</Text>
-                <Text fontSize="$5" color="$color">
-                  {container.bill_number}
-                </Text>
-              </View>
-              <View fd="row" w="100%" justifyContent="space-between">
-                <Text color="$color11">Amount</Text>
-                <Text fontSize="$5" color="$color">
-                  {container.amount}
-                </Text>
-              </View>
-            </View>
-          ))}
-          <Text fontWeight="500" fontSize="$6" color="$color">
-            Transit Status
-          </Text>
-          {!transit.status.length && (
-            <Text color="$color11" fontSize="$5">
-              No status updates.
+              {transit.shipping_company}
             </Text>
-          )}
-          {transit.status.map(status => (
-            <View
-              key={status.id}
-              bg="$color6"
-              p="$4"
-              ai="center"
-              borderRadius="$4"
-              gap="$2"
-              w="100%"
-            >
-              <View fd="row" w="100%" justifyContent="space-between">
-                <Text color="$color11">Time</Text>
-                <Text
-                  textAlign="right"
-                  textOverflow="ellipsis"
-                  w="60%"
-                  color="$color"
-                >
-                  {formatTime(new Date(status.timestamp))}
-                </Text>
-              </View>
-              <View fd="row" w="100%" justifyContent="space-between">
-                <Text color="$color11">Location</Text>
-                <Text
-                  textAlign="right"
-                  textOverflow="ellipsis"
-                  w="60%"
-                  fontSize="$5"
-                  color="$color"
-                  fontWeight="500"
-                >
-                  {status.location}
-                </Text>
-              </View>
-              <Text textAlign="left" w="100%" color="$color11">
-                Status
-              </Text>
-              <Text fontSize="$5" w="100%" color="$color">
-                {status.remark}
-              </Text>
-            </View>
-          ))}
+          </View>
         </View>
-      </ScrollView>
+        <View
+          w="100%"
+          fd="row"
+          gap="$2"
+          bg="$color6"
+          jc="space-between"
+          ai="center"
+          p="$4"
+          borderRadius="$4"
+        >
+          <Text fontSize="$5" color="$color11">
+            Contact
+          </Text>
+          <Link target="_blank" href={`tel:${transit.contact_number}`}>
+            <Text fontSize="$6" color="$blue10">
+              {transit.contact_number}
+            </Text>
+          </Link>
+        </View>
+        <View
+          borderRadius="$4"
+          fd="row"
+          bg="$color6"
+          jc="center"
+          ai="center"
+          w="100%"
+          py="$4"
+        >
+          <View
+            pos="relative"
+            fd="row"
+            ai="center"
+            justifyContent="space-between"
+          >
+            <Text
+              textOverflow="ellipsis"
+              w="45%"
+              textAlign="left"
+              numberOfLines={1}
+              fontSize={16}
+              color="$color"
+            >
+              {transit.origin}
+            </Text>
+            <ArrowRight
+              pos="absolute"
+              left="50%"
+              right="50%"
+              transform={[{ translateX: -10 }]}
+              size={20}
+              color="$color"
+            />
+            <Text
+              numberOfLines={1}
+              w="45%"
+              textAlign="right"
+              fontSize={16}
+              color="$color"
+            >
+              {transit.destination}
+            </Text>
+          </View>
+        </View>
+
+        <Text fontWeight="500" fontSize="$6" color="$color">
+          Container Details
+        </Text>
+        {!transit.container.length && (
+          <Text color="$color11" fontSize="$5">
+            No containers attached.
+          </Text>
+        )}
+        {transit.container.map(container => (
+          <View
+            key={container.id}
+            bg="$color6"
+            p="$4"
+            borderRadius="$4"
+            gap="$2"
+            w="100%"
+          >
+            <View fd="row" w="100%" justifyContent="space-between">
+              <Text color="$color11">Container Id</Text>
+              <Text fontSize="$5" color="$color">
+                #{container.id}
+              </Text>
+            </View>
+            <View fd="row" w="100%" justifyContent="space-between">
+              <Text color="$color11">Bill</Text>
+              <Text fontSize="$5" color="$color">
+                {container.bill_number}
+              </Text>
+            </View>
+            <View fd="row" w="100%" justifyContent="space-between">
+              <Text color="$color11">Amount</Text>
+              <Text fontSize="$5" color="$color">
+                {container.amount}
+              </Text>
+            </View>
+          </View>
+        ))}
+        <Text fontWeight="500" fontSize="$6" color="$color">
+          Transit Status
+        </Text>
+        {!transit.status.length && (
+          <Text color="$color11" fontSize="$5">
+            No status updates.
+          </Text>
+        )}
+        {transit.status.map(status => (
+          <View
+            key={status.id}
+            bg="$color6"
+            p="$4"
+            ai="center"
+            borderRadius="$4"
+            gap="$2"
+            w="100%"
+          >
+            <View fd="row" w="100%" justifyContent="space-between">
+              <Text color="$color11">Time</Text>
+              <Text
+                textAlign="right"
+                textOverflow="ellipsis"
+                w="60%"
+                color="$color"
+              >
+                {formatTime(new Date(status.timestamp))}
+              </Text>
+            </View>
+            <View fd="row" w="100%" justifyContent="space-between">
+              <Text color="$color11">Location</Text>
+              <Text
+                textAlign="right"
+                textOverflow="ellipsis"
+                w="60%"
+                fontSize="$5"
+                color="$color"
+                fontWeight="500"
+              >
+                {status.location}
+              </Text>
+            </View>
+            <Text textAlign="left" w="100%" color="$color11">
+              Status
+            </Text>
+            <Text fontSize="$5" w="100%" color="$color">
+              {status.remark}
+            </Text>
+          </View>
+        ))}
+      </BottomSheetScrollView>
       <View
         pos="absolute"
         b="$0"
@@ -353,69 +381,66 @@ export function AddContainer({
         Add Container
       </Button>
       <BottomSheet {...sheetProps}>
-        <ScrollView
-          contentContainerStyle={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '$4',
-            gap: '$3',
-          }}
-          h="100%"
-          automaticallyAdjustKeyboardInsets
-        >
-          <View ai="center" gap="$1">
-            <Text fontSize="$6" fontWeight="700">
-              Add Container
-            </Text>
-            <Text fontSize="$5" color="$color11">
-              Add container details to the transit.
-            </Text>
-          </View>
-
-          <View w="100%" gap="$2" mt="$6">
-            <Controller
-              control={control}
-              render={({ field: { onChange, onBlur, value, disabled } }) => (
-                <Input
-                  placeholder="Bill Number"
-                  value={value}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  disabled={disabled}
-                />
-              )}
-              name="billNumber"
-            />
-
-            <Controller
-              control={control}
-              render={({ field: { onChange, onBlur, value, disabled } }) => (
-                <Input
-                  placeholder="Amount"
-                  keyboardType="numeric"
-                  value={value.toString()}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  disabled={disabled}
-                />
-              )}
-              name="amount"
-            />
-          </View>
-
-          {error && <Text color="$red9">{error.message}</Text>}
-
-          <Button
-            bg="$green10"
-            mt="$2"
-            w="100%"
-            shadowColor="$shadowColor"
-            onPress={addContainer}
-            disabled={formState === 'loading'}
+        <View w="100%" h="100%">
+          <BottomSheetTitle centerTitle>Add Container</BottomSheetTitle>
+          <BottomSheetScrollView
+            contentContainerStyle={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: 20,
+              gap: 20,
+              width: '100%',
+            }}
+            style={{ height: '100%' }}
+            automaticallyAdjustKeyboardInsets
           >
-            {formState === 'loading' ? 'Adding Container...' : 'Add Container'}
-          </Button>
-        </ScrollView>
+            <View w="100%" gap="$2" mt="$6">
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value, disabled } }) => (
+                  <Input
+                    placeholder="Bill Number"
+                    value={value}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    disabled={disabled}
+                  />
+                )}
+                name="billNumber"
+              />
+
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value, disabled } }) => (
+                  <Input
+                    placeholder="Amount"
+                    keyboardType="numeric"
+                    value={value.toString()}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    disabled={disabled}
+                  />
+                )}
+                name="amount"
+              />
+            </View>
+
+            {error && <Text color="$red9">{error.message}</Text>}
+
+            <Button
+              bg="$green10"
+              mt="$2"
+              w="100%"
+              shadowColor="$shadowColor"
+              onPress={addContainer}
+              disabled={formState === 'loading'}
+            >
+              {formState === 'loading'
+                ? 'Adding Container...'
+                : 'Add Container'}
+            </Button>
+          </BottomSheetScrollView>
+        </View>
       </BottomSheet>
     </>
   );
@@ -494,68 +519,63 @@ export function AddStatus({
         Add Status
       </Button>
       <BottomSheet {...sheetProps}>
-        <ScrollView
-          contentContainerStyle={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '$4',
-            gap: '$3',
-          }}
-          h="100%"
-          automaticallyAdjustKeyboardInsets
-        >
-          <View ai="center" gap="$1">
-            <Text fontSize="$6" fontWeight="700">
-              Add Status
-            </Text>
-            <Text fontSize="$5" color="$color11">
-              Add status details to the transit.
-            </Text>
-          </View>
-
-          <View w="100%" gap="$2" mt="$6">
-            <Controller
-              control={control}
-              render={({ field: { onChange, onBlur, value, disabled } }) => (
-                <Input
-                  placeholder="Location"
-                  value={value}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  disabled={disabled}
-                />
-              )}
-              name="location"
-            />
-
-            <Controller
-              control={control}
-              render={({ field: { onChange, onBlur, value, disabled } }) => (
-                <Input
-                  placeholder="Remark"
-                  value={value}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  disabled={disabled}
-                />
-              )}
-              name="remark"
-            />
-          </View>
-
-          {error && <Text color="$red9">{error.message}</Text>}
-
-          <Button
-            bg="$purple10"
-            mt="$2"
-            w="100%"
-            shadowColor="$shadowColor"
-            onPress={addStatus}
-            disabled={formState === 'loading'}
+        <View w="100%" h="100%">
+          <BottomSheetTitle centerTitle>Add Status</BottomSheetTitle>
+          <BottomSheetScrollView
+            contentContainerStyle={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: 20,
+              gap: 20,
+              width: '100%',
+            }}
+            style={{ height: '100%' }}
+            automaticallyAdjustKeyboardInsets
           >
-            {formState === 'loading' ? 'Adding Status...' : 'Add Status'}
-          </Button>
-        </ScrollView>
+            <View w="100%" gap="$2" mt="$6">
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value, disabled } }) => (
+                  <Input
+                    placeholder="Location"
+                    value={value}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    disabled={disabled}
+                  />
+                )}
+                name="location"
+              />
+
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value, disabled } }) => (
+                  <Input
+                    placeholder="Remark"
+                    value={value}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    disabled={disabled}
+                  />
+                )}
+                name="remark"
+              />
+            </View>
+
+            {error && <Text color="$red9">{error.message}</Text>}
+
+            <Button
+              bg="$purple10"
+              mt="$2"
+              w="100%"
+              shadowColor="$shadowColor"
+              onPress={addStatus}
+              disabled={formState === 'loading'}
+            >
+              {formState === 'loading' ? 'Adding Status...' : 'Add Status'}
+            </Button>
+          </BottomSheetScrollView>
+        </View>
       </BottomSheet>
     </>
   );

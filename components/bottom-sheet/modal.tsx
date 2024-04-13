@@ -1,4 +1,8 @@
-import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import {
+  BottomSheetModal,
+  BottomSheetScrollView,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
 import type React from 'react';
 import { useRef, useMemo, useCallback, type ReactNode } from 'react';
 import { useColorScheme } from 'react-native';
@@ -51,6 +55,7 @@ export const BottomSheet = ({
 
   return (
     <BottomSheetModal
+      stackBehavior="push"
       onDismiss={onDismiss}
       ref={sheetRef}
       snapPoints={snapPoints}
@@ -73,7 +78,7 @@ export const BottomSheet = ({
       }}
       keyboardBehavior="interactive"
     >
-      <BottomSheetView>{children}</BottomSheetView>
+      {children}
     </BottomSheetModal>
   );
 };
@@ -90,10 +95,19 @@ export const BottomSheetTitle = ({
   const theme = useTheme();
 
   return (
-    <View px="$4" py="$3" borderBottomWidth="$1" borderBottomColor="$gray2">
+    <View
+      ai="center"
+      px="$4"
+      py="$3"
+      borderBottomWidth="$1"
+      borderBottomColor="$gray2"
+    >
       <Text
         textAlign={centerTitle ? 'center' : undefined}
         fontWeight="700"
+        w="80%"
+        textOverflow="ellipsis"
+        numberOfLines={1}
         fontSize={26}
         color={theme.color.get()}
       >
