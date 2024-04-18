@@ -1,6 +1,10 @@
 name: build android
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
 
 jobs:
   build:
@@ -15,9 +19,19 @@ jobs:
         distribution: 'temurin'
         java-version: 17
 
+    - name: cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
     - name: setup pnpm
       uses: pnpm/action-setup@v3
-
+      
     - name: install packages
       run: pnpm install
 
@@ -27,5 +41,13 @@ jobs:
     - name: build
       run: cd android && ./gradlew assembleRelease
 
-    - run: tree
+    - name: release
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        name: "KzShortner ${{ github.event.inputs.version }}"
+        body: "Check the assets for the APK."
+        artifacts: "android/app/build/outputs/apk/release/*.apk"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.inputs.version }}
       
