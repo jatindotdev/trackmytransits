@@ -1,0 +1,33 @@
+name: build android
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+      
+    - name: setup java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: 17
+        cache: 'gradle'
+
+    - name: setup pnpm
+      uses: pnpm/action-setup@v3
+
+    - name: install packages
+      run: pnpm install
+
+    - name: prebuild
+      run: pnpx expo prebuild --platform android
+
+    - name: build
+      run: cd android && ./gradlew assembleRelease
+
+    - run: tree
+      
