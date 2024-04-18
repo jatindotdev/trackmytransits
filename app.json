@@ -20,7 +20,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "in.shivshakti.transit"
+      "package": "go.shivshakti.transit"
     },
     "web": {
       "bundler": "metro",
