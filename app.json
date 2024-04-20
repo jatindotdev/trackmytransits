@@ -20,7 +20,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "go.shivshakti.transit"
+      "package": "com.shivshakti.transit"
     },
     "web": {
       "bundler": "metro",
@@ -36,9 +36,6 @@
     "extra": {
       "router": {
         "origin": false
-      },
-      "eas": {
-        "projectId": "c7438886-d1b5-42bf-b11c-c071ca815a40"
       }
     }
   }
