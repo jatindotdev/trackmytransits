@@ -1,31 +1,20 @@
 import { useFormState } from '@/hooks/useFormState';
-import { BottomSheet, BottomSheetTitle, useBottomSheetModal } from './modal';
-import { supabase } from '@/lib/supabase';
-import Toast from 'react-native-toast-message';
-import { ActivityIndicator, Pressable } from 'react-native';
-import { ChevronDown, Settings } from '@tamagui/lucide-icons';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import {
-  Adapt,
-  Button,
-  DialogSheetContents,
-  Input,
-  Select,
-  Sheet,
-  Text,
-  useTheme,
-} from 'tamagui';
-import type { Tables } from '@/types/supabase';
-import { View } from 'tamagui';
-import useSWR from 'swr';
 import { fetchUsers } from '@/lib/fetchers';
-import { FlatList, RefreshControl } from 'react-native-gesture-handler';
-import { useSession } from '@/lib/ctx';
-import { useState } from 'react';
-import { z } from 'zod';
-import { Controller, useForm } from 'react-hook-form';
+import { supabase } from '@/lib/supabase';
+import type { Tables } from '@/types/supabase';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Settings } from '@tamagui/lucide-icons';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { ActivityIndicator, Pressable } from 'react-native';
+import { FlatList, RefreshControl } from 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
+import useSWR from 'swr';
+import { Button, Input, Text, View, useTheme } from 'tamagui';
+import { z } from 'zod';
 import { SearchBar } from '../shared/search-bar';
+import { BottomSheet, BottomSheetTitle, useBottomSheetModal } from './modal';
 
 interface SettingsSheetProps {
   user: Tables<'users'>;
@@ -492,53 +481,34 @@ export const ManageUsers = () => {
                           control={editControl}
                           name="role"
                           render={({ field: { onChange, value } }) => (
-                            <Select value={value} onValueChange={onChange}>
-                              <Select.Trigger iconAfter={ChevronDown}>
-                                <Select.Value placeholder="Role" />
-                              </Select.Trigger>
-
-                              <Adapt when="sm" platform="touch">
-                                <Sheet
-                                  modal
-                                  dismissOnSnapToBottom
-                                  animationConfig={{
-                                    type: 'spring',
-                                    damping: 20,
-                                    mass: 1.2,
-                                    stiffness: 250,
-                                  }}
-                                  snapPoints={[40, 60, 75, 92.5]}
-                                >
-                                  <Sheet.Frame gap="$4" p="$4">
-                                    <Text textAlign="center" fontSize="$6">
-                                      Select a role
-                                    </Text>
-                                    {['worker', 'receptionist'].map(
-                                      (role, index) => (
-                                        <Select.Item
-                                          index={index}
-                                          key={role}
-                                          value={role}
-                                          p="$4"
-                                          bg="$gray2"
-                                          borderRadius="$4"
-                                        >
-                                          <Select.ItemText
-                                            unstyled
-                                            color="$color"
-                                          >
-                                            {role.charAt(0).toUpperCase() +
-                                              role.slice(1)}
-                                          </Select.ItemText>
-                                          <Select.ItemIndicator />
-                                        </Select.Item>
-                                      )
-                                    )}
-                                  </Sheet.Frame>
-                                  <Sheet.Overlay />
-                                </Sheet>
-                              </Adapt>
-                            </Select>
+                            <View w="100%" fd="row" gap="$2.5">
+                              <Button
+                                onPress={() => onChange('worker')}
+                                bg={value === 'worker' ? '$green10' : '$color6'}
+                                color={value === 'worker' ? 'white' : '$color'}
+                                w="100%"
+                                fontSize="$5"
+                                flex={1}
+                              >
+                                Worker
+                              </Button>
+                              <Button
+                                onPress={() => onChange('receptionist')}
+                                bg={
+                                  value === 'receptionist'
+                                    ? '$green10'
+                                    : '$color6'
+                                }
+                                color={
+                                  value === 'receptionist' ? 'white' : '$color'
+                                }
+                                w="100%"
+                                fontSize="$5"
+                                flex={1}
+                              >
+                                Receptionist
+                              </Button>
+                            </View>
                           )}
                         />
 
@@ -547,7 +517,7 @@ export const ManageUsers = () => {
                         )}
 
                         <Button
-                          bg="$green9"
+                          bg="$purple10"
                           w="100%"
                           fontSize="$5"
                           onPress={editUser}
@@ -653,47 +623,28 @@ export const ManageUsers = () => {
                   control={control}
                   name="role"
                   render={({ field: { onChange, value } }) => (
-                    <Select value={value} onValueChange={onChange}>
-                      <Select.Trigger iconAfter={ChevronDown}>
-                        <Select.Value placeholder="Role" />
-                      </Select.Trigger>
-
-                      <Adapt when="sm" platform="touch">
-                        <Sheet
-                          modal
-                          dismissOnSnapToBottom
-                          animationConfig={{
-                            type: 'spring',
-                            damping: 20,
-                            mass: 1.2,
-                            stiffness: 250,
-                          }}
-                          snapPoints={[40, 60, 75, 92.5]}
-                        >
-                          <Sheet.Frame gap="$4" p="$4">
-                            <Text textAlign="center" fontSize="$6">
-                              Select a role
-                            </Text>
-                            {['worker', 'receptionist'].map((role, index) => (
-                              <Select.Item
-                                index={index}
-                                key={role}
-                                value={role}
-                                p="$4"
-                                bg="$gray2"
-                                borderRadius="$4"
-                              >
-                                <Select.ItemText unstyled color="$color">
-                                  {role.charAt(0).toUpperCase() + role.slice(1)}
-                                </Select.ItemText>
-                                <Select.ItemIndicator />
-                              </Select.Item>
-                            ))}
-                          </Sheet.Frame>
-                          <Sheet.Overlay />
-                        </Sheet>
-                      </Adapt>
-                    </Select>
+                    <View w="100%" fd="row" gap="$2.5">
+                      <Button
+                        onPress={() => onChange('worker')}
+                        bg={value === 'worker' ? '$green10' : '$color6'}
+                        color={value === 'worker' ? 'white' : '$color'}
+                        w="100%"
+                        fontSize="$5"
+                        flex={1}
+                      >
+                        Worker
+                      </Button>
+                      <Button
+                        onPress={() => onChange('receptionist')}
+                        bg={value === 'receptionist' ? '$green10' : '$color6'}
+                        color={value === 'receptionist' ? 'white' : '$color'}
+                        w="100%"
+                        fontSize="$5"
+                        flex={1}
+                      >
+                        Receptionist
+                      </Button>
+                    </View>
                   )}
                 />
 
