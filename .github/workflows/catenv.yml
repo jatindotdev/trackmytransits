@@ -8,7 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: set-env
-        run: echo $ENV_SECRET > .env
+        env:
+          MYENV: ${{ secrets.ENV_SECRET }}
+        run: echo $MYENV > e.json
 
       - name: get-env
-        run: cat .env
+        run: cat e.json
