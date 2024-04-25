@@ -1,14 +1,14 @@
 name: catenv
 
 on: 
-  workflow_dispatch:
+  push:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: set-env
-        run: echo $ENV > .env
+        run: echo $ENV_SECRET > .env
 
       - name: get-env
         run: cat .env
