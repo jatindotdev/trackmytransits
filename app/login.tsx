@@ -1,31 +1,31 @@
-import { useEffect, useState } from 'react';
-import { Controller, useForm, type FieldValues } from 'react-hook-form';
+import { useEffect, useState } from "react";
+import { Controller, useForm, type FieldValues } from "react-hook-form";
 import type {
   NativeSyntheticEvent,
   TextInputChangeEventData,
-} from 'react-native';
-import { Button, Input, ScrollView, Text, View } from 'tamagui';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { supabase } from '@/lib/supabase';
-import Toast from 'react-native-toast-message';
-import { router } from 'expo-router';
-import { useFormState } from '@/hooks/useFormState';
+} from "react-native";
+import { Button, Input, ScrollView, Text, View } from "tamagui";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { supabase } from "@/lib/supabase";
+import Toast from "react-native-toast-message";
+import { router } from "expo-router";
+import { useFormState } from "@/hooks/useFormState";
 
 const loginSchema = z.object({
   email: z
     .string({
-      required_error: 'Email is required.',
+      required_error: "Email is required.",
     })
     .email({
-      message: 'Enter a valid email.',
+      message: "Enter a valid email.",
     }),
   password: z
     .string({
-      required_error: 'Password is required.',
+      required_error: "Password is required.",
     })
     .min(8, {
-      message: 'Password must be at least 8 characters.',
+      message: "Password must be at least 8 characters.",
     }),
 });
 
@@ -37,8 +37,8 @@ export default function LoginScreen() {
   } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: 'jatin@shivshakti.in',
-      password: '12345678',
+      email: "",
+      password: "",
     },
   });
 
@@ -47,30 +47,29 @@ export default function LoginScreen() {
   const error = Object.values(errors)[0];
 
   const onSubmit = handleSubmit(async ({ email, password }) => {
-
-    setFormState('loading');
+    setFormState("loading");
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    setFormState(error ? 'error' : 'idle');
+    setFormState(error ? "error" : "idle");
 
     if (error) {
       Toast.show({
-        type: 'error',
-        text1: 'Failed to login.',
+        type: "error",
+        text1: "Failed to login.",
         text2: error.message,
       });
       return;
     }
 
-    router.replace('/(app)/');
+    router.replace("/(app)/");
 
     Toast.show({
-      type: 'success',
-      text1: 'Welcome back!',
+      type: "success",
+      text1: "Welcome back!",
     });
   });
 
@@ -79,15 +78,15 @@ export default function LoginScreen() {
       nestedScrollEnabled
       contentContainerStyle={{
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '$3.5',
-        padding: '$8',
-        backgroundColor: '$backgroundStrong',
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "$3.5",
+        padding: "$8",
+        backgroundColor: "$backgroundStrong",
       }}
       bg="$backgroundStrong"
     >
-      <Text fontSize="$9" mb="$8" fontWeight={'800'}>
+      <Text fontSize="$9" mb="$8" fontWeight={"800"}>
         Shiv Shakti
       </Text>
       <Controller
@@ -123,9 +122,9 @@ export default function LoginScreen() {
       <Button w="100%" bg="$purple10" onPress={onSubmit}>
         {
           {
-            idle: 'Login',
-            loading: 'Logging in...',
-            error: 'Try again',
+            idle: "Login",
+            loading: "Logging in...",
+            error: "Try again",
           }[formState]
         }
       </Button>
