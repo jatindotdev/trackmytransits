@@ -1,9 +1,10 @@
 name: build android
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       version:
+        description: "version to release"
         required: true
 
 jobs:
@@ -12,49 +13,61 @@ jobs:
     permissions:
       contents: write
     steps:
-    - name: checkout
-      uses: actions/checkout@v4
-      
-    - name: setup java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: 17
+      - name: checkout
+        uses: actions/checkout@v4
 
-    - name: cache
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
+      - name: setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: 17
 
-    - name: setup pnpm
-      uses: pnpm/action-setup@v3
-      
-    - name: install packages
-      run: pnpm install
+      - name: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
-    - name: get env
-      env:
-        ENV_SECRET: ${{ secrets.ENV_SECRET }}
-      run: echo $ENV_SECRET > .env
+      - name: setup pnpm
+        uses: pnpm/action-setup@v3
 
-    - name: prebuild
-      run: pnpx expo prebuild --platform android
+      - name: install packages
+        run: pnpm install
 
-    - name: build
-      run: cd android && ./gradlew assembleRelease
+      - name: set env
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          sed -i '' 's/process.env.EXPO_PUBLIC_SUPABASE_URL as string;/"${SUPABASE_URL}"/g' lib/supabase.ts;
+          sed -i '' 's/process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string;/"${SUPABASE_ANON_KEY}"/g' lib/supabase.ts;
 
-    - name: release
-      uses: ncipollo/release-action@v1
-      with:
-        allowUpdates: true
-        name: "ShivShakti Transit ${{ github.event.inputs.version }}"
-        body: "Check the assets for the APK."
-        artifacts: "android/app/build/outputs/apk/release/*.apk"
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ github.event.inputs.version }}
-      
+      - name: prebuild
+        run: pnpx expo prebuild --platform android
+
+      - name: build
+        env:
+          BUILD_KEY: ${{ secrets.BUILD_KEY }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo $BUILD_KEY | base64 -d > shivshakti.jks;
+          ./android/gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=shivshakti.jks \
+            -Pandroid.injected.signing.store.password=$KEY_PASSWORD \
+            -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+            -Pandroid.injected.signing.key.password=$KEY_PASSWORD
+
+      - name: release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          name: "ShivShakti Transit ${{ github.event.inputs.version }}"
+          body: "Check the assets for the APK."
+          artifacts: "android/app/build/outputs/apk/release/*.apk"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.event.inputs.version }}
