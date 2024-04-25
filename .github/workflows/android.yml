@@ -37,6 +37,11 @@ jobs:
     - name: install packages
       run: pnpm install
 
+    - name: get env
+      env:
+        ENV_SECRET: ${{ secrets.ENV_SECRET }}
+      run: echo $ENV_SECRET > .env
+
     - name: prebuild
       run: pnpx expo prebuild --platform android
 
