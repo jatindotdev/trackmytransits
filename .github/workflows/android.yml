@@ -43,8 +43,8 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          sed -i 's/process.env.EXPO_PUBLIC_SUPABASE_URL as string;/"$SUPABASE_URL"/g' lib/supabase.ts;
-          sed -i 's/process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string;/"$SUPABASE_ANON_KEY"/g' lib/supabase.ts;
+          sed -i "s/process.env.EXPO_PUBLIC_SUPABASE_URL as string;/\"$SUPABASE_URL\";/g" lib/supabase.ts;
+          sed -i "s/process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string;/\"$SUPABASE_ANON_KEY\";/g" lib/supabase.ts;
 
       - name: prebuild
         run: pnpx expo prebuild --platform android
