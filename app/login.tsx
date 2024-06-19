@@ -87,7 +87,7 @@ export default function LoginScreen() {
       bg="$backgroundStrong"
     >
       <Text fontSize="$9" mb="$8" fontWeight={"800"}>
-        Shiv Shakti
+        TrackMyTransits
       </Text>
       <Controller
         control={control}
